@@ -2,8 +2,8 @@
 
 ParkEase is a full-stack Smart Parking Management System designed to manage parking locations, slots, bookings, vehicles, users, and payments efficiently.
 
-This project is built following real-world software engineering standards and is suitable for college presentations, demos, and interviews.
-
+This project is built following real-world software engineering standards ,including role-based access,slot management ,booking lifecycle, and a gateway-ready payment module.
+ 
 🌟 FEATURES
 
 👤 User & Admin Management
@@ -129,7 +129,9 @@ ParkEase-Smart-Parking-Spot-Finder/
 └── README.md
 
 
+
 🚀 GETTING STARTED
+
 
 ✅ Prerequisites
 
