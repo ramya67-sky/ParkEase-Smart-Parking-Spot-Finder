@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -18,34 +17,37 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user on app start
+  // ✅ Load user on app start
   useEffect(() => {
     try {
       const user = authService.getCurrentUser();
-const isAuth = authService.isAuthenticated();
+      const isAuth = authService.isAuthenticated();
 
-if (user && isAuth) {
-  setCurrentUser(user);
-  setIsAuthenticated(true);
-}
+      if (user && isAuth) {
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+      }
     } catch (e) {
       console.error("Auth load failed:", e);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
+  // ✅ After login/register
   const handleLogin = (user) => {
     setCurrentUser(user);
     setIsAuthenticated(true);
   };
 
+  // ✅ Logout
   const handleLogout = () => {
-    authService.logout(false);//don't auto redirect 
+    authService.logout();
     setCurrentUser(null);
     setIsAuthenticated(false);
   };
 
-  // Redirect based on role (BACKEND USES: role)
+  // ✅ Role based redirect
   const redirectToDashboard = () => {
     if (!currentUser) return "/login";
     return currentUser.role === "ADMIN" ? "/admin" : "/user";
@@ -55,67 +57,61 @@ if (user && isAuth) {
 
   return (
     <Router>
-      <div className="app">
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              !isAuthenticated ? (
-                <Login onLogin={handleLogin} />
-              ) : (
-                <Navigate to={redirectToDashboard()} />
-              )
-            }
-          />
+      <Routes>
+        {/* ================= PUBLIC ROUTES ================= */}
 
-          <Route
-            path="/register"
-            element={
-              !isAuthenticated ? (
-                <Register onRegister={handleLogin} />
-              ) : (
-                <Navigate to={redirectToDashboard()} />
-              )
-            }
-          />
+        <Route
+          path="/login"
+          element={
+            !isAuthenticated ? (
+              <Login onLogin={handleLogin} />
+            ) : (
+              <Navigate to={redirectToDashboard()} />
+            )
+          }
+        />
 
-          {/* User Protected */}
-          <Route
-            path="/user/*"
-            element={
-              <AuthGuard user={currentUser} allowedRoles={["USER"]}>
-                <UserDashboard user={currentUser} onLogout={handleLogout} />
-              </AuthGuard>
-            }
-          />
+        <Route
+          path="/register"
+          element={
+            !isAuthenticated ? (
+              <Register onRegister={handleLogin} />
+            ) : (
+              <Navigate to={redirectToDashboard()} />
+            )
+          }
+        />
 
-          {/* Admin Protected */}
-          <Route
-            path="/admin/*"
-            element={
-              <AuthGuard user={currentUser} allowedRoles={["ADMIN"]}>
-                <AdminDashboard user={currentUser} onLogout={handleLogout} />
-              </AuthGuard>
-            }
-          />
+        {/* ================= USER ROUTE ================= */}
 
-          {/* Root */}
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <Navigate to={redirectToDashboard()} />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+        <Route
+          path="/user/*"
+          element={
+            <AuthGuard user={currentUser} allowedRoles={["USER"]}>
+              <UserDashboard user={currentUser} onLogout={handleLogout} />
+            </AuthGuard>
+          }
+        />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
+        {/* ================= ADMIN ROUTE ================= */}
+
+        <Route
+          path="/admin/*"
+          element={
+            <AuthGuard user={currentUser} allowedRoles={["ADMIN"]}>
+              <AdminDashboard user={currentUser} onLogout={handleLogout} />
+            </AuthGuard>
+          }
+        />
+
+        {/* ================= DEFAULT ================= */}
+
+        {/* First page */}
+        <Route path="/" element={<Navigate to="/register" />} />
+
+        {/* Not found */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </Router>
   );
 }

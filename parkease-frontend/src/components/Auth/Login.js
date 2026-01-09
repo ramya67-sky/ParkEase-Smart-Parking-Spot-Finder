@@ -1,51 +1,55 @@
-// src/components/Auth/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth';
-import { MESSAGES } from '../../utils/constants';
 import './Auth.css';
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Basic validation
-    if (!username || !password) {
-      setError('Username and password are required.');
+    if (!formData.username || !formData.password) {
+      setError('All fields are required');
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await authService.login(username, password);
+      const response = await authService.login(formData);
 
       // ✅ Backend returns { token, user }
       if (response && response.user) {
         const user = response.user;
 
-        // Store in App state
         onLogin(user);
 
-        // ✅ Redirect based on BACKEND role
+        // ✅ Redirect based on role
         if (user.role === 'ADMIN') {
           navigate('/admin');
         } else {
           navigate('/user');
         }
       } else {
-        setError(response?.message || MESSAGES.ERROR);
+        setError(response?.message || 'Login failed');
       }
 
     } catch (err) {
-      setError(err.message || MESSAGES.ERROR);
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -58,14 +62,16 @@ const Login = ({ onLogin }) => {
       {error && <div className="error-message">{error}</div>}
 
       <form onSubmit={handleSubmit}>
+
         <div className="form-group">
-          <label className="form-label">Username</label>
+          <label className="form-label">Username or Email</label>
           <input
             className="form-input"
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Enter username or email"
           />
         </div>
 
@@ -74,15 +80,22 @@ const Login = ({ onLogin }) => {
           <input
             className="form-input"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Enter password"
           />
         </div>
 
-        <button className="btn btn-primary" type="submit" disabled={loading}>
+        <button className="btn" type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
+
+        {/* ✅ SWITCH TO REGISTER */}
+        <div className="auth-switch">
+          Don’t have an account? <span onClick={() => navigate('/register')}>Register</span>
+        </div>
+
       </form>
     </div>
   );
