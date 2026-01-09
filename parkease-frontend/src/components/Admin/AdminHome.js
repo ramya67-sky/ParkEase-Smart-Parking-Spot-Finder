@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { FaCar, FaMoneyBillWave, FaClock, FaParking } from 'react-icons/fa';
-import api from '../../services/api';
-import { PARKING_API } from '../../utils/constants';
-import './Admin.css';
+import React, { useEffect, useState } from "react";
+import { FaCar, FaMoneyBillWave, FaClock, FaParking } from "react-icons/fa";
+import api from "../../services/api";
+import "./Admin.css";
 
 const AdminHome = () => {
   const [stats, setStats] = useState({
     totalBookings: 0,
     activeBookings: 0,
     totalRevenue: 0,
-    totalSlots: 0
+    totalSlots: 0,
   });
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadDashboardStats();
@@ -18,25 +19,35 @@ const AdminHome = () => {
 
   const loadDashboardStats = async () => {
     try {
-      const res = await api.get(`${PARKING_API}/report`);
+      // ✅ CORRECT BACKEND ENDPOINT
+      const res = await api.get(
+        "/admin/reports/usage?from=2026-01-01&to=2026-12-31"
+      );
+
+      const data = res.data;
+
       setStats({
-        totalBookings: res.data.totalBookings || 0,
-        activeBookings: res.data.activeBookings?.length || 0,
-        totalRevenue: res.data.totalRevenue || 0,
-        totalSlots: res.data.totalSlots || 0
+        totalBookings: data.totalBookings || 0,
+        activeBookings: data.activeBookings || 0,
+        totalRevenue: data.totalRevenue || 0,
+        totalSlots: data.totalSlots || 0,
       });
     } catch (err) {
-      console.error('Dashboard load failed');
+      console.error("Dashboard load failed", err);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <div className="page-container">Loading dashboard...</div>;
+  }
 
   return (
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">Admin Dashboard</h1>
-        <p className="page-subtitle">
-          Real-time parking system overview
-        </p>
+        <p className="page-subtitle">Real-time parking system overview</p>
       </div>
 
       <div className="stats-grid">

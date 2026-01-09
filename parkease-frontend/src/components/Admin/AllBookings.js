@@ -174,8 +174,8 @@ const AllBookings = () => {
             {filteredBookings.map(b => (
               <tr key={b.id}>
                 <td>{b.bookingNumber}</td>
-                <td>{b.vehicle.licensePlate}</td>
-                <td>#{b.parkingSlot.slotNumber}</td>
+                <td>{b.vehicle?.licensePlate || 'N/A'}</td>
+                <td>#{b.parkingSlot?.slotNumber || 'N/A'}</td>
                 <td>{formatDate(b.entryTime)}</td>
                 <td>{calculateDuration(b.entryTime, b.exitTime)}</td>
                 <td>
