@@ -1,69 +1,44 @@
 // src/components/Auth/Register.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/auth';
-import { MESSAGES, PATTERNS } from '../../utils/constants';
-import './Auth.css';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { authService } from "../../services/auth";
+import "./Auth.css";
 
 const Register = ({ onRegister }) => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    username: '',
-    email: '',
-    password: '',
-    role: 'USER' // ✅ BACKEND ROLE
+    fullName: "",
+    username: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    userType: "USER"
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const validate = () => {
-    if (!formData.fullName || !formData.username || !formData.email || !formData.password) {
-      return 'All fields are required.';
-    }
-    if (!PATTERNS.EMAIL.test(formData.email)) return 'Invalid email address.';
-    if (!PATTERNS.PASSWORD.test(formData.password)) return 'Password must be at least 6 characters.';
-    return null;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+    setError("");
 
     try {
       setLoading(true);
 
       const response = await authService.register(formData);
 
-      // ✅ Backend returns { token, user }
       if (response && response.user) {
-        const user = response.user;
-
-        onRegister(user);
-
-        // ✅ Redirect based on BACKEND role
-        if (user.role === 'ADMIN') {
-          navigate('/admin');
-        } else {
-          navigate('/user');
-        }
+        onRegister(response.user);
+        navigate("/login"); // after register go to login
       } else {
-        setError(response?.message || MESSAGES.ERROR);
+        setError(response?.message || "Registration failed");
       }
-
     } catch (err) {
-      setError(err.message || MESSAGES.ERROR);
+      setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -71,63 +46,52 @@ const Register = ({ onRegister }) => {
 
   return (
     <div className="auth-container">
-      <h2>Register</h2>
+      <div className="auth-wrapper register-wrapper">
+        <div className="auth-right">
+          <div className="auth-form-container register-form-container">
 
-      {error && <div className="error-message">{error}</div>}
+            <div className="auth-header">
+              <h2>Create Account</h2>
+              <p>Register to use ParkEase</p>
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label">Full Name</label>
-          <input
-            className="form-input"
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            placeholder="Enter full name"
-          />
+            {error && <div className="error-message">{error}</div>}
+
+            <form className="auth-form" onSubmit={handleSubmit}>
+
+              <div className="form-group">
+                <input name="fullName" placeholder="Full Name" onChange={handleChange} required />
+              </div>
+
+              <div className="form-group">
+                <input name="username" placeholder="Username" onChange={handleChange} required />
+              </div>
+
+              <div className="form-group">
+                <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+              </div>
+
+              <div className="form-group">
+                <input name="phoneNumber" placeholder="Phone Number" onChange={handleChange} required />
+              </div>
+
+              <div className="form-group">
+                <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+              </div>
+
+              <button className="btn btn-primary btn-block" disabled={loading}>
+                {loading ? "Registering..." : "Register"}
+              </button>
+
+            </form>
+
+            <div className="auth-footer">
+              Already have an account? <Link to="/login">Login</Link>
+            </div>
+
+          </div>
         </div>
-
-        <div className="form-group">
-          <label className="form-label">Username</label>
-          <input
-            className="form-input"
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Choose a username"
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Email</label>
-          <input
-            className="form-input"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter email"
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Password</label>
-          <input
-            className="form-input"
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Enter password"
-          />
-        </div>
-
-        <button className="btn btn-primary" type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
