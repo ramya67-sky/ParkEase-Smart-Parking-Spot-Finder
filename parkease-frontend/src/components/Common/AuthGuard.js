@@ -1,6 +1,6 @@
 // src/components/Common/AuthGuard.js
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React from "react";
+import { Navigate } from "react-router-dom";
 
 /**
  * AuthGuard
@@ -23,8 +23,8 @@ const AuthGuard = ({ children, user, allowedRoles = [] }) => {
     return children;
   }
 
-  // Role check
-  const hasAccess = allowedRoles.includes(user.userType);
+  // ✅ BACKEND SENDS: user.role
+  const hasAccess = allowedRoles.includes(user.role);
 
   if (!hasAccess) {
     return <Navigate to="/" replace />;

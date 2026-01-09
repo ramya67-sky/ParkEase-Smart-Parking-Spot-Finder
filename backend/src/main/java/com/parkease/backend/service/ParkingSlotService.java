@@ -43,7 +43,7 @@ public class ParkingSlotService {
             // SMALL slots (1–8)
             for (int i = 1; i <= 8; i++) {
                 ParkingSlot slot = new ParkingSlot();
-                slot.setSlotNumber(i);
+                slot.setSlotNumber("S"+i);
                 slot.setFloorNumber(1);
                 slot.setSlotType("SMALL");
                 slot.setIsAvailable(true);
@@ -55,7 +55,7 @@ public class ParkingSlotService {
             // MEDIUM slots (9–14)
             for (int i = 9; i <= 14; i++) {
                 ParkingSlot slot = new ParkingSlot();
-                slot.setSlotNumber(i);
+                slot.setSlotNumber("S"+i);
                 slot.setFloorNumber(1);
                 slot.setSlotType("MEDIUM");
                 slot.setIsAvailable(true);
@@ -67,7 +67,7 @@ public class ParkingSlotService {
             // LARGE slots (15–20)
             for (int i = 15; i <= 20; i++) {
                 ParkingSlot slot = new ParkingSlot();
-                slot.setSlotNumber(i);
+                slot.setSlotNumber("S"+i);
                 slot.setFloorNumber(1);
                 slot.setSlotType("LARGE");
                 slot.setIsAvailable(true);
@@ -88,7 +88,7 @@ public class ParkingSlotService {
     }
 
     // ================= ADMIN API =================
-    public ParkingSlot addSlot(Integer slotNumber, Integer floorNumber, String slotType, Long locationId) {
+    public ParkingSlot addSlot(String slotNumber, Integer floorNumber, String slotType, Long locationId) {
         ParkingLocation location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new RuntimeException("Location not found"));
 

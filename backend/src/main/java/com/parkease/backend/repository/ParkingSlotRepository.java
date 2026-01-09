@@ -2,6 +2,8 @@ package com.parkease.backend.repository;
 
 import com.parkease.backend.model.ParkingSlot;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,6 +27,9 @@ public interface ParkingSlotRepository extends JpaRepository<ParkingSlot, Long> 
     List<ParkingSlot> findByLocation_Id(Long locationId);
 
     // ================= SMART SLOT ALLOCATION =================
-    Optional<ParkingSlot>
-    findFirstByIsOccupiedFalseAndIsAvailableTrueAndSlotType(String slotType);
+    Optional<ParkingSlot> findFirstByIsOccupiedFalseAndIsAvailableTrueAndSlotType(String slotType);
+
+    // ================= 🔥 FIND SLOT BY CURRENT BOOKING ID =================
+    @Query("SELECT p FROM ParkingSlot p WHERE p.currentBooking.id = :bookingId")
+    Optional<ParkingSlot> findByCurrentBookingId(@Param("bookingId") Long bookingId);
 }

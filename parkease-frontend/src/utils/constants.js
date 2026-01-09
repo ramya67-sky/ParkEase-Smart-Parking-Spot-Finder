@@ -2,12 +2,11 @@
 // API Configuration
 // ================================
 export const API_BASE_URL =
-  process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+  process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
-export const AUTH_API = `${API_BASE_URL}/auth`;
-export const PARKING_API = `${API_BASE_URL}/parking`;
-export const PAYMENT_API = `${API_BASE_URL}/payments`; // future use
-
+export const AUTH_API = `${API_BASE_URL}/api/auth`;
+export const PARKING_API = `${API_BASE_URL}/api/parking`;
+export const PAYMENT_API = `${API_BASE_URL}/api/payments`;
 
 // ================================
 // UPI / Manual Payment Configuration
@@ -59,7 +58,7 @@ export const SLOT_TYPES = {
 // ================================
 export const USER_ROLES = {
   ADMIN: 'ADMIN',
-  CUSTOMER: 'CUSTOMER'
+  USER: 'USER'
 };
 
 

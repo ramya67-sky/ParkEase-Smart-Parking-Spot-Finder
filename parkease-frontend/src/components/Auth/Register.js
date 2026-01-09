@@ -11,8 +11,9 @@ const Register = ({ onRegister }) => {
     username: '',
     email: '',
     password: '',
-    userType: 'CUSTOMER'
+    role: 'USER' // ✅ BACKEND ROLE
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const Register = ({ onRegister }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
     const validationError = validate();
     if (validationError) {
       setError(validationError);
@@ -41,16 +43,27 @@ const Register = ({ onRegister }) => {
 
     try {
       setLoading(true);
+
       const response = await authService.register(formData);
-      if (response.success) {
-        onRegister(response.user);
-        // Redirect based on role
-        navigate(response.user.userType === 'ADMIN' ? '/admin' : '/user');
+
+      // ✅ Backend returns { token, user }
+      if (response && response.user) {
+        const user = response.user;
+
+        onRegister(user);
+
+        // ✅ Redirect based on BACKEND role
+        if (user.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/user');
+        }
       } else {
-        setError(response.message || MESSAGES.ERROR);
+        setError(response?.message || MESSAGES.ERROR);
       }
+
     } catch (err) {
-      setError(err.response?.data?.message || MESSAGES.ERROR);
+      setError(err.message || MESSAGES.ERROR);
     } finally {
       setLoading(false);
     }
@@ -59,7 +72,9 @@ const Register = ({ onRegister }) => {
   return (
     <div className="auth-container">
       <h2>Register</h2>
+
       {error && <div className="error-message">{error}</div>}
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Full Name</label>
@@ -72,6 +87,7 @@ const Register = ({ onRegister }) => {
             placeholder="Enter full name"
           />
         </div>
+
         <div className="form-group">
           <label className="form-label">Username</label>
           <input
@@ -83,6 +99,7 @@ const Register = ({ onRegister }) => {
             placeholder="Choose a username"
           />
         </div>
+
         <div className="form-group">
           <label className="form-label">Email</label>
           <input
@@ -94,6 +111,7 @@ const Register = ({ onRegister }) => {
             placeholder="Enter email"
           />
         </div>
+
         <div className="form-group">
           <label className="form-label">Password</label>
           <input
@@ -105,6 +123,7 @@ const Register = ({ onRegister }) => {
             placeholder="Enter password"
           />
         </div>
+
         <button className="btn btn-primary" type="submit" disabled={loading}>
           {loading ? 'Registering...' : 'Register'}
         </button>

@@ -1,14 +1,17 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import UserDashboard from './components/User/UserDashboard';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import { authService } from './services/auth';
-import LoadingScreen from './components/Common/LoadingScreen';
-import AuthGuard from './components/Common/AuthGuard';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import UserDashboard from "./components/User/UserDashboard";
+import AdminDashboard from "./components/Admin/AdminDashboard";
+
+import { authService } from "./services/auth";
+import LoadingScreen from "./components/Common/LoadingScreen";
+import AuthGuard from "./components/Common/AuthGuard";
+
+import "./App.css";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,10 +20,16 @@ function App() {
 
   // Load user on app start
   useEffect(() => {
-    const user = authService.getCurrentUser();
-    if (user) {
-      setCurrentUser(user);
-      setIsAuthenticated(true);
+    try {
+      const user = authService.getCurrentUser();
+const isAuth = authService.isAuthenticated();
+
+if (user && isAuth) {
+  setCurrentUser(user);
+  setIsAuthenticated(true);
+}
+    } catch (e) {
+      console.error("Auth load failed:", e);
     }
     setLoading(false);
   }, []);
@@ -31,14 +40,16 @@ function App() {
   };
 
   const handleLogout = () => {
-    authService.logout();
+    authService.logout(false);//don't auto redirect 
     setCurrentUser(null);
     setIsAuthenticated(false);
   };
 
-  // Helper to redirect based on role
-  const redirectToDashboard = () =>
-    currentUser?.userType === 'ADMIN' ? '/admin' : '/user';
+  // Redirect based on role (BACKEND USES: role)
+  const redirectToDashboard = () => {
+    if (!currentUser) return "/login";
+    return currentUser.role === "ADMIN" ? "/admin" : "/user";
+  };
 
   if (loading) return <LoadingScreen message="Loading..." />;
 
@@ -50,45 +61,58 @@ function App() {
           <Route
             path="/login"
             element={
-              !isAuthenticated ? <Login onLogin={handleLogin} /> : <Navigate to={redirectToDashboard()} />
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              !isAuthenticated ? <Register onRegister={handleLogin} /> : <Navigate to={redirectToDashboard()} />
+              !isAuthenticated ? (
+                <Login onLogin={handleLogin} />
+              ) : (
+                <Navigate to={redirectToDashboard()} />
+              )
             }
           />
 
-          {/* Protected Routes - User */}
+          <Route
+            path="/register"
+            element={
+              !isAuthenticated ? (
+                <Register onRegister={handleLogin} />
+              ) : (
+                <Navigate to={redirectToDashboard()} />
+              )
+            }
+          />
+
+          {/* User Protected */}
           <Route
             path="/user/*"
             element={
-              <AuthGuard user={currentUser} allowedRoles={['CUSTOMER']}>
+              <AuthGuard user={currentUser} allowedRoles={["USER"]}>
                 <UserDashboard user={currentUser} onLogout={handleLogout} />
               </AuthGuard>
             }
           />
 
-          {/* Protected Routes - Admin */}
+          {/* Admin Protected */}
           <Route
             path="/admin/*"
             element={
-              <AuthGuard user={currentUser} allowedRoles={['ADMIN']}>
+              <AuthGuard user={currentUser} allowedRoles={["ADMIN"]}>
                 <AdminDashboard user={currentUser} onLogout={handleLogout} />
               </AuthGuard>
             }
           />
 
-          {/* Default Route */}
+          {/* Root */}
           <Route
             path="/"
             element={
-              isAuthenticated ? <Navigate to={redirectToDashboard()} /> : <Navigate to="/login" />
+              isAuthenticated ? (
+                <Navigate to={redirectToDashboard()} />
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
 
-          {/* 404 fallback */}
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

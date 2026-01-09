@@ -16,7 +16,7 @@ public class ParkingSlot {
 
     // ---------------- SLOT DETAILS ----------------
     @Column(name = "slot_number", nullable = false)
-    private Integer slotNumber;
+    private String slotNumber;
 
     @Column(name = "floor_number", nullable = false)
     private Integer floorNumber;
@@ -32,7 +32,7 @@ public class ParkingSlot {
     private Boolean isAvailable = true;
 
     // ---------------- CURRENT BOOKING ----------------
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "current_booking_id")
     private Booking currentBooking;
 
@@ -50,7 +50,7 @@ public class ParkingSlot {
         this.createdAt = LocalDateTime.now();
     }
 
-    public ParkingSlot(Integer slotNumber, Integer floorNumber, String slotType) {
+    public ParkingSlot(String slotNumber, Integer floorNumber, String slotType) {
         this.slotNumber = slotNumber;
         this.floorNumber = floorNumber;
         this.slotType = slotType.toUpperCase();
@@ -75,8 +75,8 @@ public class ParkingSlot {
 
     // ---------------- GETTERS & SETTERS ----------------
     public Long getId() { return id; }
-    public Integer getSlotNumber() { return slotNumber; }
-    public void setSlotNumber(Integer slotNumber) { this.slotNumber = slotNumber; }
+    public String getSlotNumber() { return slotNumber; }
+    public void setSlotNumber(String slotNumber) { this.slotNumber = slotNumber; }
     public Integer getFloorNumber() { return floorNumber; }
     public void setFloorNumber(Integer floorNumber) { this.floorNumber = floorNumber; }
     public String getSlotType() { return slotType; }

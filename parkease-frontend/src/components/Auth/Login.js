@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth';
-import { MESSAGES, PATTERNS } from '../../utils/constants';
+import { MESSAGES } from '../../utils/constants';
 import './Auth.css';
 
 const Login = ({ onLogin }) => {
@@ -24,16 +24,28 @@ const Login = ({ onLogin }) => {
 
     try {
       setLoading(true);
+
       const response = await authService.login(username, password);
-      if (response.success) {
-        onLogin(response.user);
-        // Redirect based on role
-        navigate(response.user.userType === 'ADMIN' ? '/admin' : '/user');
+
+      // ✅ Backend returns { token, user }
+      if (response && response.user) {
+        const user = response.user;
+
+        // Store in App state
+        onLogin(user);
+
+        // ✅ Redirect based on BACKEND role
+        if (user.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/user');
+        }
       } else {
-        setError(response.message || MESSAGES.ERROR);
+        setError(response?.message || MESSAGES.ERROR);
       }
+
     } catch (err) {
-      setError(err.response?.data?.message || MESSAGES.ERROR);
+      setError(err.message || MESSAGES.ERROR);
     } finally {
       setLoading(false);
     }
@@ -42,7 +54,9 @@ const Login = ({ onLogin }) => {
   return (
     <div className="auth-container">
       <h2>Login</h2>
+
       {error && <div className="error-message">{error}</div>}
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Username</label>
@@ -54,6 +68,7 @@ const Login = ({ onLogin }) => {
             placeholder="Enter username"
           />
         </div>
+
         <div className="form-group">
           <label className="form-label">Password</label>
           <input
@@ -64,6 +79,7 @@ const Login = ({ onLogin }) => {
             placeholder="Enter password"
           />
         </div>
+
         <button className="btn btn-primary" type="submit" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>

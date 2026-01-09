@@ -7,14 +7,16 @@ import { AUTH_API, STORAGE_KEYS } from '../utils/constants';
 const storeAuthData = (data) => {
   if (!data?.user) return;
 
+  // Save user
   localStorage.setItem(
     STORAGE_KEYS.USER,
     JSON.stringify(data.user)
   );
 
-  // ⚠️ Replace with real token when backend is ready
-  const token = data.token || 'demo-token';
-  localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+  // Save JWT token (or fallback if backend not sending yet)
+  const token = data.token || data.jwt;
+if (!token) throw new Error('Auth token missing from backend');
+localStorage.setItem(STORAGE_KEYS.TOKEN, token);
 };
 
 export const authService = {
@@ -29,7 +31,8 @@ export const authService = {
         password
       });
 
-      if (response.data?.success) {
+      // Backend returns: { success, user, token }
+      if (response.data?.user) {
         storeAuthData(response.data);
       }
 
@@ -37,8 +40,8 @@ export const authService = {
 
     } catch (error) {
       throw {
-        message: error.message || 'Login failed',
-        status: error.status
+        message: error?.response?.data?.message || 'Login failed',
+        status: error?.response?.status
       };
     }
   },
@@ -53,7 +56,7 @@ export const authService = {
         userData
       );
 
-      if (response.data?.success) {
+      if (response.data?.user) {
         storeAuthData(response.data);
       }
 
@@ -61,8 +64,8 @@ export const authService = {
 
     } catch (error) {
       throw {
-        message: error.message || 'Registration failed',
-        status: error.status
+        message: error?.response?.data?.message || 'Registration failed',
+        status: error?.response?.status
       };
     }
   },
@@ -99,15 +102,15 @@ export const authService = {
   },
 
   /**
-   * ROLE CHECKS
+   * ROLE CHECKS (✅ FIXED TO user.role)
    */
   isAdmin: () => {
     const user = authService.getCurrentUser();
-    return user?.userType === 'ADMIN';
+    return user?.role === 'ADMIN';
   },
 
   isUser: () => {
     const user = authService.getCurrentUser();
-    return user?.userType === 'USER';
+    return user?.role === 'USER';
   }
 };

@@ -47,7 +47,7 @@ public class ParkingService {
 
             // SMALL slots (1–10)
             for (int i = 1; i <= 10; i++) {
-                ParkingSlot slot = new ParkingSlot(i, 1, "SMALL");
+                ParkingSlot slot = new ParkingSlot("S"+i, 1, "SMALL");
                 slot.setIsAvailable(true);
                 slot.setIsOccupied(false);
                 slotRepository.save(slot);
@@ -55,7 +55,7 @@ public class ParkingService {
 
             // MEDIUM slots (11–17)
             for (int i = 11; i <= 17; i++) {
-                ParkingSlot slot = new ParkingSlot(i, 1, "MEDIUM");
+                ParkingSlot slot = new ParkingSlot("S"+i, 1, "MEDIUM");
                 slot.setIsAvailable(true);
                 slot.setIsOccupied(false);
                 slotRepository.save(slot);
@@ -63,7 +63,7 @@ public class ParkingService {
 
             // LARGE slots (18–20)
             for (int i = 18; i <= 20; i++) {
-                ParkingSlot slot = new ParkingSlot(i, 1, "LARGE");
+                ParkingSlot slot = new ParkingSlot("S"+i, 1, "LARGE");
                 slot.setIsAvailable(true);
                 slot.setIsOccupied(false);
                 slotRepository.save(slot);

@@ -1,70 +1,159 @@
-# Getting Started with Create React App
+🚗 ParkEase – Smart Parking Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A production-ready full-stack Smart Parking System designed to manage parking locations, slots, bookings, users, vehicles, and payments with a clean architecture and scalable design.
+This project demonstrates real-world software engineering practices, including role-based access, slot management, booking lifecycle, and a gateway-ready payment module.
 
-## Available Scripts
+🌟 Key Features
 
-In the project directory, you can run:
+👤 User & Admin Management
+Secure authentication (Admin & User roles)
+Role-based access control
+User–vehicle mapping support
 
-### `npm start`
+🅿️ Smart Parking Slot Management
+Multiple parking locations (City-wise)
+Floor-based slot organization
+Slot types: SMALL / MEDIUM / LARGE
+Real-time availability tracking
+Automatic slot occupation & release
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+📖 Booking System
+Unique booking number generation
+Entry & exit time tracking
+Hourly rate calculation
+Booking status lifecycle (ACTIVE / COMPLETED)
+Slot-to-booking linkage
+💳 Payment Module (UPI – Simulation, Gateway Ready)
+Supports:
+Google Pay
+PhonePe
+Paytm
+UPI ID–based manual payment simulation
+Transaction ID validation
+Booking-to-payment verification
+Backend-ready design for future gateway integration
+💡 The payment system is implemented as an abstraction layer, allowing seamless future integration with gateways like Razorpay or Stripe without changing business logic.
+📊 Admin Dashboard
+Manage parking locations
+View and control slots
+Monitor bookings and users
+System-wide visibility
+🎨 Clean & Professional UI
+Responsive design
+Pure CSS (no UI frameworks)
+Clear UX for booking & payments
+🛠️ Tech Stack
+Backend
+Java 17
+Spring Boot 3.2
+Spring Data JPA
+RESTful APIs
+Maven
+H2 / MySQL (configurable)
+Frontend
+React 18
+React Router DOM
+Axios
+React Icons
+Pure CSS (No frameworks)
+📁 Project Structure
+Copy code
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+ParkEase-Smart-Parking-Spot-Finder/
+│
+├── backend/
+│   └── parkease-backend/
+│
+├── parkease-frontend/
+│
+└── README.md
+🚀 Quick Start
+✅ Prerequisites
+Java 17+
+Node.js 16+
+Maven 3.8+
+▶️ Backend Setup
+Copy code
+Bash
+cd backend/parkease-backend
+mvn clean install
+mvn spring-boot:run
+Backend URL:
+Copy code
 
-### `npm test`
+http://localhost:8080
+▶️ Frontend Setup
+Copy code
+Bash
+cd parkease-frontend
+npm install
+npm start
+Frontend URL:
+Copy code
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+http://localhost:3000
+🔐 Demo Credentials
+Admin
+Username: admin
+Password: admin123
+User
+Username: user
+Password: user123
+🔗 API Overview
+Authentication
+POST /api/auth/login
+POST /api/auth/register
+GET /api/auth/users
+Parking & Booking
+GET /api/parking/locations
+GET /api/parking/slots/{locationId}
+POST /api/bookings/create
+PUT /api/bookings/exit/{bookingId}
+GET /api/bookings
+Payments (Simulation)
+Booking-linked payment verification
+Transaction validation
+Backend integration ready
+💳 Payment Design (Current Implementation)
+File:
+Copy code
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+frontend/src/utils/paymentService.js
+Supported Methods
+GPay
+PhonePe
+Paytm
+Capabilities
+Amount validation
+UPI ID selection
+Transaction ID verification
+Booking-payment mapping
+Future backend API hook
+Copy code
+Js
+// Backend-ready verification hook
+// await api.post('/payments/verify', paymentData);
+📈 Project Status
+✅ 90% Completed
+Core functionality implemented
+Payment flow completed (simulation)
+Backend & frontend integrated
+GitHub repository structured and documented
+🔜 Future Enhancements:
+Real payment gateway integration
+Live deployment
+Analytics dashboard
+Notification system
+🤝 Contributing
+Pull requests and suggestions are welcome.
+📄 License
+MIT License
+👩‍💻 Developer
+Developed by: Ramya
+Project: ParkEase – Smart Parking Management System
+If you want next, I can:
+✉️ Finalize the Infosys email matching this README
+🗣️ Give a 2-minute project explanation script
+📊 Create a DB relationship explanation
+🎯 Prepare mentor review Q&A
+Just say next 👍

@@ -84,7 +84,7 @@ public class ParkingController {
     // -------- ADMIN: ADD SLOT --------
     @PostMapping("/admin/parking/slot")
     public ResponseEntity<ParkingSlot> addSlot(
-            @RequestParam Integer slotNumber,
+            @RequestParam String slotNumber,
             @RequestParam Integer floorNumber,
             @RequestParam String slotType,
             @RequestParam Long locationId

@@ -23,34 +23,41 @@ public class BookingService {
     private ParkingSlotRepository slotRepository;
 
     // ---------------- REMOVE VEHICLE ----------------
-    @Transactional
-    public Map<String, Object> completeBooking(String bookingNumber) {
+@Transactional
+public Map<String, Object> completeBooking(String bookingNumber) {
 
-        Map<String, Object> response = new HashMap<>();
+    Map<String, Object> response = new HashMap<>();
 
-        Booking booking = bookingRepository
-                .findByBookingNumber(bookingNumber)
-                .orElse(null);
+    Booking booking = bookingRepository
+            .findByBookingNumber(bookingNumber)
+            .orElse(null);
 
-        if (booking == null || !"ACTIVE".equals(booking.getStatus())) {
-            response.put("success", false);
-            response.put("message", "Active booking not found");
-            return response;
-        }
-
-        booking.completeBooking();
-        bookingRepository.save(booking);
-
-        ParkingSlot slot = booking.getParkingSlot();
-        slot.vacate();
-        slotRepository.save(slot);
-
-        response.put("success", true);
-        response.put("entryTime", booking.getEntryTime());
-        response.put("exitTime", booking.getExitTime());
-        response.put("hours", booking.getParkingDurationHours());
-        response.put("amount", booking.getTotalAmount());
-
+    if (booking == null || !"ACTIVE".equals(booking.getStatus())) {
+        response.put("success", false);
+        response.put("message", "Active booking not found");
         return response;
     }
+
+    // 1️⃣ Complete booking
+    booking.completeBooking();
+    bookingRepository.save(booking);
+
+    // 2️⃣ Find slot using booking ID (DIRECT DB QUERY)
+    ParkingSlot slot = slotRepository
+            .findByCurrentBookingId(booking.getId())
+            .orElseThrow(() -> new RuntimeException("Slot not found for this booking"));
+
+    // 3️⃣ Vacate slot
+    slot.vacate();
+    slotRepository.save(slot);
+
+    // 4️⃣ Response
+    response.put("success", true);
+    response.put("entryTime", booking.getEntryTime());
+    response.put("exitTime", booking.getExitTime());
+    response.put("hours", booking.getParkingDurationHours());
+    response.put("amount", booking.getTotalAmount());
+
+    return response;
+}
 }

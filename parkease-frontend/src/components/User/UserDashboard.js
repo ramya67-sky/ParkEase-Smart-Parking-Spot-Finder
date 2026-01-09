@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import UserSidebar from './UserSidebar';
 import MyBookings from './MyBookings';
@@ -9,19 +9,18 @@ import './User.css';
 const UserDashboard = ({ user, onLogout }) => {
   const location = useLocation();
 
-  // Sidebar open/close state with persistence
+  // Sidebar open/close state
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const stored = localStorage.getItem('userSidebar');
     return stored !== 'closed';
   });
 
-  // Persist sidebar state
   useEffect(() => {
-    localStorage.setItem(
-      'userSidebar',
-      sidebarOpen ? 'open' : 'closed'
-    );
+    localStorage.setItem('userSidebar', sidebarOpen ? 'open' : 'closed');
   }, [sidebarOpen]);
+
+  // ✅ Ensure user is loaded
+  if (!user) return <div>Loading user...</div>;
 
   return (
     <div className="dashboard-container">
@@ -34,36 +33,19 @@ const UserDashboard = ({ user, onLogout }) => {
       />
 
       {/* Main Content */}
-      <div
-        className={`dashboard-content ${
-          sidebarOpen ? 'sidebar-open' : 'sidebar-closed'
-        }`}
-      >
-        {/* Route animation wrapper */}
+      <div className={`dashboard-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div key={location.pathname} className="route-animate">
           <Routes>
             {/* Default route */}
             <Route index element={<Navigate to="my-bookings" replace />} />
 
             {/* User pages */}
-            <Route
-              path="my-bookings"
-              element={<MyBookings user={user} />}
-            />
-            <Route
-              path="park-vehicle"
-              element={<ParkVehicle user={user} />}
-            />
-            <Route
-              path="view-slots"
-              element={<ViewSlots />}
-            />
+            <Route path="my-bookings" element={<MyBookings user={user} />} />
+            <Route path="park-vehicle" element={<ParkVehicle user={user} />} />
+            <Route path="view-slots" element={<ViewSlots user={user} />} />
 
             {/* Fallback */}
-            <Route
-              path="*"
-              element={<Navigate to="my-bookings" replace />}
-            />
+            <Route path="*" element={<Navigate to="my-bookings" replace />} />
           </Routes>
         </div>
       </div>
