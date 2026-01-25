@@ -1,21 +1,20 @@
-// src/components/Auth/Register.js
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { authService } from "../../services/auth";
-import "./Auth.css";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { authService } from '../../services/auth';
+import './Auth.css';
 
 const Register = ({ onRegister }) => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    username: "",
-    email: "",
-    password: "",
-    phoneNumber: "",
-    userType: "USER"
+    fullName: '',
+    username: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+    userType: 'USER'
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,21 +23,32 @@ const Register = ({ onRegister }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     try {
       setLoading(true);
 
-      const response = await authService.register(formData);
+      const payload = {
+        fullName: formData.fullName,
+        username: formData.username || formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        phoneNumber: formData.phoneNumber,
+        role: formData.userType.toUpperCase()
+      };
 
-      if (response && response.user) {
+      const response = await authService.register(payload);
+
+      if (response?.success) {
         onRegister(response.user);
-        navigate("/login"); // after register go to login
+        navigate('/login');
       } else {
-        setError(response?.message || "Registration failed");
+        setError(response?.message || 'Registration failed');
       }
+
     } catch (err) {
-      setError(err.message || "Registration failed");
+      console.error('Registration error:', err);
+      setError(err?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -46,51 +56,22 @@ const Register = ({ onRegister }) => {
 
   return (
     <div className="auth-container">
-      <div className="auth-wrapper register-wrapper">
-        <div className="auth-right">
-          <div className="auth-form-container register-form-container">
-
-            <div className="auth-header">
-              <h2>Create Account</h2>
-              <p>Register to use ParkEase</p>
-            </div>
-
-            {error && <div className="error-message">{error}</div>}
-
-            <form className="auth-form" onSubmit={handleSubmit}>
-
-              <div className="form-group">
-                <input name="fullName" placeholder="Full Name" onChange={handleChange} required />
-              </div>
-
-              <div className="form-group">
-                <input name="username" placeholder="Username" onChange={handleChange} required />
-              </div>
-
-              <div className="form-group">
-                <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-              </div>
-
-              <div className="form-group">
-                <input name="phoneNumber" placeholder="Phone Number" onChange={handleChange} required />
-              </div>
-
-              <div className="form-group">
-                <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-              </div>
-
-              <button className="btn btn-primary btn-block" disabled={loading}>
-                {loading ? "Registering..." : "Register"}
-              </button>
-
-            </form>
-
-            <div className="auth-footer">
-              Already have an account? <Link to="/login">Login</Link>
-            </div>
-
-          </div>
-        </div>
+      <h2>Create Account</h2>
+      {error && <div className="error-message">{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <input name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required />
+        <input name="username" placeholder="Username (optional)" value={formData.username} onChange={handleChange} />
+        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
+        <input name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleChange} required />
+        <select name="userType" value={formData.userType} onChange={handleChange}>
+          <option value="USER">User</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+        <button type="submit" disabled={loading}>{loading ? 'Registering...' : 'Register'}</button>
+      </form>
+      <div>
+        Already have an account? <Link to="/login">Login</Link>
       </div>
     </div>
   );
